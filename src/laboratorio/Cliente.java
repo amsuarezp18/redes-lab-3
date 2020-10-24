@@ -22,14 +22,10 @@ public class Cliente {
 	static int port = 50005;
 	static int canal;
 	static InetAddress group;
-	static final int SIZE = 65500; //65500
+	static final int SIZE = 65500; 
  
 	public static void main(String args[]) throws Exception
 	{
-		iniciar();
-	}
-	public static void iniciar() throws IOException {
-
 		String[] grupos = {"225.6.7.8","224.3.29.71","224.22.65.7"};
 		System.out.println("Escriba el canal al que desea conectarse(1,2,3)");
 		Scanner lectorConsola = new Scanner(System.in);
@@ -42,21 +38,12 @@ public class Cliente {
 		mSocket.setReuseAddress(true);
 		mSocket.joinGroup(group);
 
-		//	        DatagramSocket serverSocket = new DatagramSocket(port);
-
-		/**
-		 * Formula for lag = (byte_size/sample_rate)*2
-		 * Byte size 9728 will produce ~ 0.45 seconds of lag. Voice slightly broken.
-		 * Byte size 1400 will produce ~ 0.06 seconds of lag. Voice extremely broken.
-		 * Byte size 4000 will produce ~ 0.18 seconds of lag. Voice slightly more broken then 9728.
-		 */
-
 		System.out.println("Conectado");
 
 		JFrame jframe = new JFrame();
 		jframe.setSize(640,360);
 		JLabel vidpanel = new JLabel();
-		jframe.setTitle("Canal "+canal);
+		jframe.setTitle("Video en canal "+canal);
 		JPanel x = new JPanel();
 		x.setLayout(new BorderLayout());
 		JButton l = new JButton("<");
@@ -68,9 +55,8 @@ public class Cliente {
 					canal = Math.max(1, canal-1);
 					group = InetAddress.getByName(grupos[canal-1]);
 					mSocket.joinGroup(group);
-					jframe.setTitle("Canal "+canal);
+					jframe.setTitle("Video en canal  "+canal);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}	

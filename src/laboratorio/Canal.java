@@ -24,7 +24,8 @@ public class Canal implements Runnable {
 	String ruta;
 	int canal;
 	String grupo;
-	static final int SIZE = 65500; //65500
+	static final int SIZE = 65500;
+	
 	public Canal(String pRuta, int pCanal, String pGrupo) {
 		this.ruta = pRuta;
 		this.canal = pCanal;
@@ -35,23 +36,15 @@ public class Canal implements Runnable {
 		try {
 			System.setProperty("java.net.preferIPv4Stack", "true");
 
+			// Using open cv to show video
 			DatagramPacket dgp;
 			InetAddress addr;
 			int port = 50005;
 			System.out.println("Canal "+canal+" iniciado");
-			/* OPEN CV STUFF*/
 			System.loadLibrary(Core.NATIVE_LIBRARY_NAME);
 			Mat frame = new Mat();
 			VideoCapture camera = new VideoCapture(this.ruta);
-			//			JFrame jframe = new JFrame("Servidor canal "+this.canal);
-			//			jframe.setSize(640,360);
-			//
-			//			jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-			//			JLabel vidpanel = new JLabel();
-			//			jframe.setContentPane(vidpanel);
-			//			jframe.setVisible(true);
-
-
+			
 			byte[] data = new byte[SIZE]; //4K
 
 			addr = InetAddress.getByName(this.grupo);
@@ -66,14 +59,7 @@ public class Canal implements Runnable {
 					ByteArrayInputStream bas = new ByteArrayInputStream(ba);
 					// Read the next chunk of data from the TargetDataLine.
 					bas.read(data, 0, data.length);
-					//					ByteArrayInputStream zz = new ByteArrayInputStream(data);
-					//
-					//					BufferedImage bi=ImageIO.read(zz);
-					//					ImageIcon image =  new ImageIcon(bi);
-					//					vidpanel.setIcon(image);
-					//					vidpanel.repaint();
-
-					// Save this chunk of data.
+				
 					dgp = new DatagramPacket (data,data.length,addr,port);
 					socket.send(dgp);
 				}
@@ -84,13 +70,10 @@ public class Canal implements Runnable {
 		}
 		catch (UnknownHostException e) {
 			System.out.println(e);
-			// TODO: handle exception
 		} catch (SocketException e1) {
 			System.out.println(e1);
-			// TODO: handle exception
 		} catch (IOException e2) {
 			System.out.println(e2);
-			// TODO: handle exception
 		}
 	}
 	static BufferedImage Mat2BufferedImage(Mat matrix)throws Exception {        
