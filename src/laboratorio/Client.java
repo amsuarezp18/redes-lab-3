@@ -13,33 +13,41 @@ import java.util.Scanner;
 
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
+import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JButton;
 
-public class Cliente {
+public class Client {
+
+	// Puerto
 	static int port = 50005;
 	static int canal;
 	static InetAddress group;
+	// Sample rate el mismo que el servidor.
 	static final int SIZE = 65500; 
  
 	public static void main(String args[]) throws Exception
 	{
 		String[] grupos = {"225.6.7.8","224.3.29.71","224.22.65.7"};
-		System.out.println("Escriba el canal al que desea conectarse(1,2,3)");
+		System.out.println("¿A qué canal desea conectarse?(1,2,3)");
 		Scanner lectorConsola = new Scanner(System.in);
 		canal = lectorConsola.nextInt(); 
 
+		// Establecer ipv4 para que compile, ya que ipv6 no soporta multicasting
 		System.setProperty("java.net.preferIPv4Stack", "true");
 
+		// Creación del grupo multicasting.
 		group = InetAddress.getByName(grupos[canal-1]);
+		// Creación del socket
 		MulticastSocket mSocket = new MulticastSocket(port);
 		mSocket.setReuseAddress(true);
+		// Se conecta al grupo 
 		mSocket.joinGroup(group);
 
 		System.out.println("Conectado");
-
+		
+		// Ajustes para recibir información del servidor
 		JFrame jframe = new JFrame();
 		jframe.setSize(640,360);
 		JLabel vidpanel = new JLabel();
@@ -72,7 +80,6 @@ public class Cliente {
 					mSocket.joinGroup(group);
 					jframe.setTitle("Canal "+canal);
 				} catch (IOException e1) {
-					// TODO Auto-generated catch block
 					e1.printStackTrace();
 				}
 			}	
@@ -86,22 +93,27 @@ public class Cliente {
 		jframe.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
 		jframe.setVisible(true);
+		
+		// Guardar la información 	que se va a recibir
 		byte[] receiveData = new byte[SIZE];
 
-
+		// Creación del paquete que se va a recibir
 		DatagramPacket receivePacket = new DatagramPacket(receiveData, receiveData.length);
 
+		// Recibe información del socket 
 		while (true)
 		{
+			// Recibe el paquete 
 			mSocket.receive(receivePacket);
+			// Se debe convertir a bytes para que luego se pase al codificador para ver el video
 			byte[] recv = receivePacket.getData();
+			// Obtener el stream de ese paquete. 
 			ByteArrayInputStream bas = new ByteArrayInputStream(recv);
 			BufferedImage bi=ImageIO.read(bas);
 			ImageIcon image =  new ImageIcon(bi);
+			// Pintar nuestro video
 			vidpanel.setIcon(image);
 			vidpanel.repaint();
 		}
 	}
 }
-
-
